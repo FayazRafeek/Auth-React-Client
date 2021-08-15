@@ -1,7 +1,6 @@
-# Auth-React-Client
-<img alt="Logo" align="right" src="https://raw.githubusercontent.com/FayazRafeek/Auth-React-Client/master/assets/logo.png?raw=true" width="20%" />
+# Auth-React-Client :unlock:
 
-> A Sample react application to demonstrate basic Authentication Function and State
+![](https://raw.githubusercontent.com/FayazRafeek/Auth-React-Client/master/assets/screen_record.gif)
 
 
 ## Available Scripts
@@ -19,9 +18,6 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 Builds the app for production to the `build` folder.\
 It correctly bundles React in production mode and optimizes the build for the best performance.
 
-## Preview :dark_sunglasses:
-
-![](https://raw.githubusercontent.com/FayazRafeek/Auth-React-Client/master/assets/screen_record.gif)
 
 ## License
 > Copyright 2021 Fayaz Rafeek
