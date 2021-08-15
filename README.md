@@ -23,7 +23,7 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 ___
 
-##### Server Implementation of this project, with `NodeJs` `JWT Token` Authentication is available at :link: [link](www.google.com)
+##### A Standalone Server Implementation of this project, with `NodeJs` `JWT Token` Authentication is available at :link: [link](www.google.com)
 
 
 ___
