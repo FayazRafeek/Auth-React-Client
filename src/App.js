@@ -34,6 +34,10 @@ function App() {
       setCurrentForm('Login')
   }
 
+  const sleep = (milliseconds) => {
+    return new Promise(resolve => setTimeout(resolve, milliseconds))
+  }
+
   //Form Submit State (enum{'inputting','loading','success','failed'})
   const [submitState, setSubmitState] = useState('inputting')
 
@@ -44,40 +48,45 @@ function App() {
     //Set Submit state
     setSubmitState('loading')
     
-    try {
+    await sleep(1000)
 
-      //Send POST req to server with inputted {data}
-      const res = await axios.post('http://localhost:8000/auth/login',data)
+    setSubmitState('failed')
+    setLoginError({...loginError, passwordError : 'Incorrect Password', isFormError : true})
 
-      if(res.data){
+    // try {
 
-        //Checking Response status 
-        if(res.data.status){
-          setSubmitState('success')
-        } else {
+    //   //Send POST req to server with inputted {data}
+    //   const res = await axios.post('http://localhost:8000/auth/login',data)
 
-          //Failed response
-          setSubmitState('failed')
+    //   if(res.data){
 
-          let errorCode = res.data.errorCode
-          //Handle Error
-          if(errorCode === 100)
-            setLoginError({...loginError, passwordError : 'Incorrect Password', isFormError : true})
-          else if(errorCode === 303)
-            setLoginError({...loginError, emailError : 'This email is not registered', isFormError : true})
-          else 
-            alert(res.data.message)
-          // 
+    //     //Checking Response status 
+    //     if(res.data.status){
+    //       setSubmitState('success')
+    //     } else {
+
+    //       //Failed response
+    //       setSubmitState('failed')
+
+    //       let errorCode = res.data.errorCode
+    //       //Handle Error
+    //       if(errorCode === 100)
+    //         setLoginError({...loginError, passwordError : 'Incorrect Password', isFormError : true})
+    //       else if(errorCode === 303)
+    //         setLoginError({...loginError, emailError : 'This email is not registered', isFormError : true})
+    //       else 
+    //         alert(res.data.message)
+    //       // 
           
-        }
-      } else {
-        alert('Unkown error occured')
-      }
+    //     }
+    //   } else {
+    //     alert('Unkown error occured')
+    //   }
 
-    } catch(error) {
-      setSubmitState('failed')
-      alert(error)
-    }
+    // } catch(error) {
+    //   setSubmitState('failed')
+    //   alert(error)
+    // }
   
   
   }
@@ -88,34 +97,37 @@ function App() {
     //Set Submit state
     setSubmitState('loading')
 
-    try {
+    await sleep(1000)
 
-      //Send POST req to server with inputted {data}
-      const res = await axios.post('http://localhost:8000/auth/register',data)
+    setSubmitState('success')
+    // try {
 
-      if(res.data){
+    //   //Send POST req to server with inputted {data}
+    //   const res = await axios.post('http://localhost:8000/auth/register',data)
 
-        if(res.data.status){
+    //   if(res.data){
 
-          setSubmitState('success')
+    //     if(res.data.status){
 
-        } else {
-          setSubmitState('failed')
+    //       setSubmitState('success')
 
-          //Error Handleing
-          let errorCode = res.data.errorCode
-          if(errorCode === 110)
-            setregisterError({...registerError, emailError : 'User Already exists! Try Login', isFormError : true})
-          else
-            alert(res.data.message) //Alert returned errorMessage
-        }
-      } else {
-        alert('Unknown error Occured') //Response is empty **Rare case
-      }
+    //     } else {
+    //       setSubmitState('failed')
+
+    //       //Error Handleing
+    //       let errorCode = res.data.errorCode
+    //       if(errorCode === 110)
+    //         setregisterError({...registerError, emailError : 'User Already exists! Try Login', isFormError : true})
+    //       else
+    //         alert(res.data.message) //Alert returned errorMessage
+    //     }
+    //   } else {
+    //     alert('Unknown error Occured') //Response is empty **Rare case
+    //   }
       
-    } catch(error) {
-      alert(error) //Catch NetworkError, Connection refused error etc.
-    }
+    // } catch(error) {
+    //   alert(error) //Catch NetworkError, Connection refused error etc.
+    // }
    
   }
 
@@ -151,7 +163,7 @@ function App() {
           
           {/* Footer to chenge Form [Login <--> Register] */}
           <FormFooter formType={currentForm} formChange={formChange}/>
-          
+
         </div>
 
       </div>
