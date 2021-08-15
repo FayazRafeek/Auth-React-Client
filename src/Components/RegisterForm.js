@@ -1,9 +1,10 @@
+//Dependencies
 import React from 'react'
 import { useState } from 'react';
-//Ui DP
+
+//UDP from Material-ui
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container'
-import { makeStyles } from '@material-ui/core/styles'
 import { FormControlLabel, TextField } from '@material-ui/core';
 import { Button } from '@material-ui/core';
 import { InputAdornment } from '@material-ui/core';
@@ -11,60 +12,15 @@ import { IconButton } from '@material-ui/core';
 import { Visibility, VisibilityOff } from '@material-ui/icons';
 import { Checkbox } from '@material-ui/core';
 
-
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    marginTop: theme.spacing(0),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
-  },
-  form: {
-    width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(1),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-
-  },
-  formNameInline : {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap:theme.spacing(2)
-  },
-  textField: {
-    [`& fieldset`]: {
-      borderRadius: '9px',
-    },
-    borderRadius : '50%',
-    marginTop: theme.spacing(2)
-  },
-  rememberBox : {
-    marginTop: theme.spacing(1)
-  },
-  submit: {
-    minWidth:'8rem',
-    borderRadius: '8px',
-    margin: 'auto',
-    marginTop: theme.spacing(2),
-    background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
-    color: '#fff'
-  },
-  heading: {
-    marginBottom: ".5rem"
-  }
-}));
+//Style For Forms
+import formStyle from './FormStyling'
 
 
+// Component
 function RegisterForm(props) {
     
 
-    //Form State
+    //Form Data State
     const [formData, setFormData] = useState({
         fName : '',
         lName : '',
@@ -73,72 +29,83 @@ function RegisterForm(props) {
         remember : false
       })
     
+    //Password visibility toggle state
     const [showPassword, setShowPassword] = useState(false)
-    const [formError, setFormError] = useState({
-        fNameError : '',
-        lNameError : '',
-        emailError : '',
-        passwordError : '',
-        isFormError: false
-    })
 
+    //Get inputted data from Form onChange()
     const formDataChange = (prop) => (event) => {
+
         if(prop !== 'remember'){
             setFormData({...formData,[prop] : event.target.value})
-            if(formError.isFormError)
-                setFormError({...formError,[prop + 'Error'] : ''})
+            if(props.errorState.isFormError)
+                props.errorHandle({...props.errorState,[prop + 'Error'] : ''})
         } 
         else
           setFormData({...formData, [prop] : event.target.checked})
-      } 
-
+    } 
     //
 
     //Form Submit
     const formSubmit = (e) => {
+
         e.preventDefault();
-        if(validateInputs)
-            props.submitAction(formData)
+        //Validate Inputs
+        if(validateInputs()){
+          //Submit form data
+          props.submitAction(formData)
+        }
     }
+    // 
+
     //Input Validation
     const validateInputs = () => {
-        let fName = formData.fName
-        let lName = formData.lName
-        let email = formData.email
-        let password = formData.password
 
-        if(!fName || fName === ''){
-            setFormError({...formError, fNameError : 'This field is required' ,isFormError : true})
-            return false
-        }
-        if(!lName || lName === ''){
-            setFormError({...formError, lNameError : 'This field is required' ,isFormError : true})
-            return false
-        }
-        if(!email || email === ''){
-            setFormError({...formError, emailError : 'This field is required', isFormError : true})
-            return false
-        }
-        if(!password || password === ''){
-            setFormError({...formError, passwordError : 'Invalid password' ,isFormError : true})
-            return false
-        }
+      let fName = formData.fName
+      let lName = formData.lName
+      let email = formData.email
+      let password = formData.password
 
-        setFormError({emailError : '', passwordError : '', fNameError : '', lNameError : '', isFormError : false})
-        return true
+      //Check inputs
+      if(fName.length === 0){
+          props.errorHandle({...props.errorState, fNameError : 'This field is required' ,isFormError : true})
+          return false
+      }
+      if(lName.length === 0){
+          props.errorHandle({...props.errorState, lNameError : 'This field is required' ,isFormError : true})
+          return false
+      }
+      if(email.length === 0){
+          props.errorHandle({...props.errorState, emailError : 'This field is required', isFormError : true})
+          return false
+      }
+      if(password.length === 0){
+          props.errorHandle({...props.errorState, passwordError : 'Invalid password' ,isFormError : true})
+          return false
+      }
+
+      props.errorHandle({emailError : '', passwordError : '', fNameError : '', lNameError : '', isFormError : false})
+      
+      //Return true if everything is perfect
+      return true
     }
     
-    const classes = useStyles();
+    //Create styles classes
+    const classes = formStyle();
+
+    //Render Method
     return (
+
         <Container component="main" maxWidth="xs">
        
           <div className={classes.paper}>
+
+            {/* Header */}
             <Typography className={classes.heading} component="h1" variant="h5">Create new account</Typography>
 
-            <form className={classes.form} noValidate onSubmit={formSubmit}>
+            {/* Form */}
+            <form className={classes.form} onSubmit={formSubmit}>
 
-
-            <div className={classes.formNameInline}>
+              <div className={classes.formNameInline}>
 
             <TextField 
               className={classes.textField}
@@ -150,8 +117,8 @@ function RegisterForm(props) {
                 type="text"
                 inputMode="text"
                 onChange={formDataChange('fName')}
-                helperText={formError.fNameError !== '' ? formError.fNameError : ''}
-                error={formError.fNameError !== '' ? true : false}
+                helperText={props.errorState.fNameError !== '' ? props.errorState.fNameError : ''}
+                error={props.errorState.fNameError !== '' ? true : false}
               />
 
             <TextField 
@@ -164,13 +131,13 @@ function RegisterForm(props) {
                 type="text"
                 inputMode="text"
                 onChange={formDataChange('lName')}
-                helperText={formError.lNameError !== '' ? formError.lNameError : ''}
-                error={formError.lNameError !== '' ? true : false}
+                helperText={props.errorState.lNameError !== '' ? props.errorState.lNameError : ''}
+                error={props.errorState.lNameError !== '' ? true : false}
               />
             </div>
 
               <TextField 
-              className={classes.textField}
+                className={classes.textField}
                 variant="outlined"
                 fullWidth
                 id="email"
@@ -179,8 +146,8 @@ function RegisterForm(props) {
                 type="email"
                 inputMode="email"
                 onChange={formDataChange('email')}
-                helperText={formError.emailError !== '' ? formError.emailError : ''}
-                error={formError.emailError !== '' ? true : false}
+                helperText={props.errorState.emailError !== '' ? props.errorState.emailError : ''}
+                error={props.errorState.emailError !== '' ? true : false}
               />
 
             <TextField 
@@ -206,8 +173,8 @@ function RegisterForm(props) {
                 id="password"
                 autoComplete="current-password"
                 onChange={formDataChange('password')}
-                helperText={formError.passwordError !== '' ? formError.passwordError : ''}
-                error={formError.passwordError !== '' ? true : false}
+                helperText={props.errorState.passwordError !== '' ? props.errorState.passwordError : ''}
+                error={props.errorState.passwordError !== '' ? true : false}
               />
 
             <FormControlLabel

@@ -1,11 +1,10 @@
+//Depenedncies
 import React from 'react'
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useState } from 'react';
 
-//Ui DP
+//DP From Material-Ui
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container'
-import { makeStyles } from '@material-ui/core/styles'
 import { TextField } from '@material-ui/core';
 import { Button } from '@material-ui/core';
 import { InputAdornment } from '@material-ui/core';
@@ -14,108 +13,83 @@ import { Visibility, VisibilityOff } from '@material-ui/icons';
 import { FormControlLabel } from '@material-ui/core';
 import { Checkbox } from '@material-ui/core';
 
-//Style Common for both Forms
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    marginTop: theme.spacing(0),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
-  },
-  form: {
-    width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(1),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start'
-  },
-  textField: {
-    [`& fieldset`]: {
-      borderRadius: '9px',
-    },
-    borderRadius : '50%',
-    marginTop: theme.spacing(2)
-  },
-  rememberBox : {
-    marginTop: theme.spacing(1)
-  },
-  submit: {
-    minWidth:'8rem',
-    borderRadius: '8px',
-    margin: 'auto',
-    marginTop: theme.spacing(2),
-    background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
-    color: '#fff'
-  },
-  heading: {
-    marginBottom: ".5rem"
-  }
-}));
+//Style For Forms
+import formStyle from './FormStyling'
 
+//Component
 function LoginForm(props) {
 
-  //Form State 
+  //Form Data State 
   const [formData, setFormData] = useState({
     email : '',
     password : '',
     remember : false
   })
+
+  //Pssword input visibility toggle state
   const [showPassword, setShowPassword] = useState(false)
 
-  const [formError,setFormError] = useState({
-    emailError : '',
-    passwordError : '',
-    isFormError : false
-  })
-
+  //Capture inputes from the form
   const formDataChange = (prop) => (event) => {
+
     if(prop !== 'remember'){
       setFormData({...formData,[prop] : event.target.value})
-      if(formError.isFormError)
-        setFormError({...formError,[prop + 'Error'] : ''})
+      if(props.errorState.isFormError)
+        props.errorHandle({...props.errorState,[prop + 'Error'] : ''})
     }
     else
       setFormData({...formData, [prop] : event.target.checked})
   } 
-  //
+  // 
 
   //Form Submit
   const formSubmit = (e) => {
+    
     e.preventDefault();
+    
+    //Call Validate Inputs
     if(validateInputs()){
+      //Submit data to submitAction in App()
       props.submitAction(formData)
     }
   }
 
   //Input Validation
   const validateInputs = () => {
+
     let email = formData.email
     let password = formData.password
+
+    //Set Error State
     if(!email || email === ''){
-      setFormError({...formError, emailError : 'This field is required', isFormError : true})
+      props.errorHandle({...props.errorState, emailError : 'This field is required', isFormError : true})
       return false
     }
     if(!password || password === ''){
-      setFormError({...formError, passwordError : 'Invalid password' ,isFormError : true})
+      props.errorHandle({...props.errorState, passwordError : 'Invalid password' ,isFormError : true})
       return false
     }
 
-    setFormError({emailError : '', passwordError : ''})
+    props.errorHandle({emailError : '', passwordError : '', isFormError : false})
+
+    //Return true if validation success
     return true
   }
  
+  //Get formsStyle as classes
+  const classes = formStyle();
 
-  const classes = useStyles();
+  //Render Method
     return (
+
         <Container component="main" maxWidth="xs">
        
           <div className={classes.paper}>
+
+            {/* Header */}
             <Typography className={classes.heading} component="h1" variant="h5">Sign in</Typography>
 
+            {/* Form */}
             <form className={classes.form} onSubmit={formSubmit}>
 
               <TextField 
@@ -128,8 +102,8 @@ function LoginForm(props) {
                 type="email"
                 inputMode="email"
                 onChange={formDataChange('email')}
-                helperText={formError.emailError !== '' ? formError.emailError : ''}
-                error={formError.emailError !== '' ? true : false}
+                helperText={props.errorState.emailError !== '' ? props.errorState.emailError : ''}
+                error={props.errorState.emailError !== '' ? true : false}
               />
 
               <TextField 
@@ -155,8 +129,8 @@ function LoginForm(props) {
                 id="password"
                 autoComplete="current-password"
                 onChange={formDataChange('password')}
-                helperText={formError.passwordError !== '' ? formError.passwordError : ''}
-                error={formError.passwordError !== '' ? true : false}
+                helperText={props.errorState.passwordError !== '' ? props.errorState.passwordError : ''}
+                error={props.errorState.passwordError !== '' ? true : false}
               />
 
               <FormControlLabel
@@ -173,7 +147,7 @@ function LoginForm(props) {
                 disabled={props.submitState === 'loading' ? true : false}
               >Login</Button>
             </form>
-          
+              
           </div>
 
         </Container>
